@@ -102,6 +102,6 @@ if (dashboard) {
 
     document.querySelector('#logout').addEventListener('click', async () => {
         await requestJson('/api/logout', { method: 'POST' });
-        window.location.href = '/login.html';
+        window.location.href = '/views/login.html';
     });
 }
