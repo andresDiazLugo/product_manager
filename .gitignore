@@ -1,0 +1,39 @@
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Dependencias de Composer
+/vendor/
+
+# Archivos generados por el sistema operativo y editores
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.bak
+*.log
+.idea/
+.vscode/
+
+# Logs y archivos temporales de PHP/Apache
+storage/logs/
+public/uploads/
+public/cache/
+*.pid
+
+# Vagrant
+.vagrant/
+
+# Docker
+docker-compose.override.yml
+
+# Cobertura y pruebas
+.phpunit.result.cache
+coverage/
+
+# Archivos locales de configuración
+phpunit.xml
+phpunit.xml.dist.local
+

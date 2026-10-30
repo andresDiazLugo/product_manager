@@ -1,0 +1,20 @@
+{
+    "require": {
+        "doctrine/orm": "^3.7",
+        "doctrine/migrations": "^3.9",
+        "doctrine/dbal": "^4.5",
+        "symfony/cache": "^7.4",
+        "vlucas/phpdotenv": "^5.7",
+        "firebase/php-jwt": "^7.2"
+    },
+    "scripts": {
+        "migration:diff": "@php vendor/bin/doctrine-migrations diff",
+        "migration:migrate": "@php vendor/bin/doctrine-migrations migrate",
+        "migration:status": "@php vendor/bin/doctrine-migrations status"
+    },
+    "autoload": {
+        "psr-4": {
+        "App\\": "app/"
+    }
+    }
+}

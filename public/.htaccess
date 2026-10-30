@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# La raíz de la aplicación redirige al login.
+RewriteRule ^$ /views/login.html [R=302,L]
+
+# Las rutas existentes como HTML, CSS, JS e imágenes se sirven directamente.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Las rutas de la API pasan por el front controller de PHP.
+RewriteRule ^ index.php [QSA,L]

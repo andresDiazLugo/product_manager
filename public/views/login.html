@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Gestor de productos</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+    <main class="container">
+        <section class="card">
+            <h1>Iniciar sesión</h1>
+            <p>Accede a tu gestor de productos.</p>
+
+            <div id="success-message" class="message success" role="status"></div>
+
+            <form id="login-form">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required autocomplete="email">
+
+                <label for="password">Contraseña</label>
+                <input id="password" name="password" type="password" required autocomplete="current-password">
+
+                <button type="submit">Ingresar</button>
+                <div id="message" class="message" role="alert"></div>
+            </form>
+
+            <p class="link">¿No tienes cuenta? <a href="/views/register.html">Regístrate</a></p>
+        </section>
+    </main>
+    <script src="../assets/auth.js" defer></script>
+</body>
+</html>
