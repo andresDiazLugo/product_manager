@@ -285,11 +285,11 @@ Contenido:
 
 ```apache
 <VirtualHost *:80>
-    ServerName gestor.tudominio.com
+    ServerName product-manager.lumina-events.com
 
-    DocumentRoot /var/www/gestor-productos/public
+    DocumentRoot /var/www/product_manager/public
 
-    <Directory /var/www/gestor-productos/public>
+    <Directory /var/www/product_manager/public>
         AllowOverride All
         Require all granted
         Options FollowSymLinks
@@ -389,7 +389,7 @@ sudo journalctl -u cloudflared -f
 La aplicación estará disponible en:
 
 ```text
-https://gestor.tudominio.com
+https://product-manager.lumina-events.com
 ```
 
 Flujo:
@@ -432,6 +432,98 @@ PHP + Doctrine + MySQL
 9. Probar http://localhost:8080.
 10. Configurar Cloudflare Tunnel.
 11. Asociar el dominio.
-12. Probar https://gestor.tudominio.com.
+12. Probar https://product-manager.lumina-events.com.
 ```
+
+## Configuración Cloudflare utilizada en este proyecto
+
+La configuración definitiva no utiliza el onboarding de Zero Trust porque solicitaba un método de pago. Se utilizó un túnel administrado localmente desde Ubuntu.
+
+### Instalar `cloudflared`
+
+```bash
+sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg \
+  | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
+
+echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared any main" \
+  | sudo tee /etc/apt/sources.list.d/cloudflared.list
+
+sudo apt-get update
+sudo apt-get install -y cloudflared
+```
+
+### Copiar el certificado desde Windows
+
+Si `cloudflared tunnel login` se ejecutó en Windows, copia el certificado a la VM desde la carpeta donde está el `Vagrantfile`:
+
+```powershell
+vagrant upload "C:\Users\andre\Downloads\cert.pem" /tmp/cert.pem
+```
+
+Dentro de Ubuntu:
+
+```bash
+sudo mkdir -p /root/.cloudflared
+sudo mv /tmp/cert.pem /root/.cloudflared/cert.pem
+sudo chmod 600 /root/.cloudflared/cert.pem
+```
+
+### Crear el túnel y el DNS
+
+```bash
+cloudflared tunnel create lumina-events-vps
+cloudflared tunnel route dns lumina-events-vps product-manager.lumina-events.com
+```
+
+El túnel creado para este proyecto tiene el ID:
+
+```text
+f9f9cd2c-703e-4971-97dd-8f70db1eeb6d
+```
+
+### Configurar el túnel
+
+Crear `/etc/cloudflared/config.yml`:
+
+```yaml
+tunnel: f9f9cd2c-703e-4971-97dd-8f70db1eeb6d
+credentials-file: /root/.cloudflared/f9f9cd2c-703e-4971-97dd-8f70db1eeb6d.json
+
+ingress:
+  - hostname: product-manager.lumina-events.com
+    service: http://localhost:80
+
+  - service: http_status:404
+```
+
+### Probar y activar como servicio
+
+Prueba primero en primer plano:
+
+```bash
+cloudflared tunnel --config /etc/cloudflared/config.yml run lumina-events-vps
+```
+
+Si el sitio funciona en:
+
+```text
+https://product-manager.lumina-events.com
+```
+
+detén la prueba con `Ctrl+C` e instala el servicio:
+
+```bash
+sudo cloudflared --config /etc/cloudflared/config.yml service install
+sudo systemctl enable --now cloudflared
+```
+
+Comprobar el estado y los logs:
+
+```bash
+sudo systemctl status cloudflared
+sudo journalctl -u cloudflared -f
+```
+
+El error Cloudflare `1033` indica que el DNS apunta al túnel, pero `cloudflared` no está conectado o ejecutándose.
 
